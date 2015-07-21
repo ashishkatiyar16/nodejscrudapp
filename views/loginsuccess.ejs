@@ -1,0 +1,30 @@
+<%- include layouts/header.ejs %>
+<html>
+    <head>
+        
+        <title><%=(locals.title) ? title :''%></title>
+    
+    </head>
+    <body>
+        <h2>Welcome to home<h2>
+        <a href='/customers/add'>Add New Customer</a><br>
+        <br>
+        <a href='/customers'>Customers List</a><br>
+        <% if(data){ %>
+        
+       <h2>Welcome to <%= data[0].name %></h2>
+       
+       <%}else {%>
+        <h2>Welcome to Guest</h2>
+       
+       <%
+       
+       
+       
+       }
+       
+       %>
+    </body>
+
+</html>
+<%- include layouts/footer.ejs %>
