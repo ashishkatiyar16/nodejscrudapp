@@ -1,37 +1,30 @@
+var customerservice = require("../services/customerservice");
 /*
  * GET users listing.
  */
 
 exports.list = function(req, res) {
-
 	req.getConnection(function(err, connection) {
-
 		var query = connection.query('SELECT * FROM customer', function(err,
 				rows) {
-
 			if (err)
 				console.log("Error Selecting : %s ", err);
-
 			res.render('customers', {
-				page_title : "Customers - Node.js",
-				data : rows
+				page_title : "Customers List",
+				data : rows,
+				username:"Guest"
 			});
-
 		});
-
-		// console.log(query.sql);
-	});
-
-};
-
-exports.add = function(req, res) {
-	res.render('add_customer', {
-		page_title : "Add Customers - Node.js"
 	});
 };
+
+exports.add = function(req, res){
+	var username=req.session.username;
+	  res.render('add_customer',{ page_title: "Add Customers ", username:username});
+	};
+
 
 exports.edit = function(req, res) {
-
 	var id = req.params.id;
 
 	req.getConnection(function(err, connection) {
@@ -43,8 +36,9 @@ exports.edit = function(req, res) {
 						console.log("Error Selecting : %s ", err);
 
 					res.render('edit_customer', {
-						page_title : "Edit Customers - Node.js",
-						data : rows
+						page_title : "Edit Customers - ",
+						data : rows,
+						username:"Guest"
 					});
 
 				});
@@ -132,8 +126,9 @@ exports.delete_customer = function(req, res) {
 };
 
 exports.login_customer = function(req, res) {
+
 	var input = JSON.parse(JSON.stringify(req.body));
-	var data = " name='" + input.username + "' and password= '"
+	var data = " email='" + input.username + "' and password= '"
 			+ input.password + "'";
 
 	req.getConnection(function(err, connection) {
@@ -144,9 +139,12 @@ exports.login_customer = function(req, res) {
 						console.log("Error Selecting : %s ", err);
 					if (rows.length > 0) {
 						console.log("success");
+						req.session.userid = rows[0].id;
+						req.session.username=rows[0].name;
 						res.render('loginsuccess', {
 							page_title : "Customers - Login success",
-							data : rows
+							data : rows,
+							username:"Guest"
 						});
 					} else {
 						res.render('index', {
@@ -157,7 +155,34 @@ exports.login_customer = function(req, res) {
 					}
 
 				});
-		// console.log(query.sql);
+		 console.log(query.sql);
 	});
 
+};
+
+exports.editprofile = function(req, res) {
+	var userid = req.session.userid;
+	console.log("userid"+userid);
+	req.getConnection(function(err, connection) {
+
+		var query = connection.query('SELECT * FROM customer WHERE id = ?',
+				[ userid ], function(err, rows) {
+
+					if (err) {
+						console.log("Error Selecting : %s ", err);
+						res.render('index', {
+							message : 'User does not exit into database',username:"Guest"
+						});
+					}
+
+					res.render('edit_customer', {
+						page_title : "Edit Customers Profile",
+						data : rows,
+						username:"Guest"
+					});
+
+				});
+
+		// console.log(query.sql);
+	});
 };

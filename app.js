@@ -6,6 +6,7 @@ var express = require('express');
 var routes = require('./routes');
 var http = require('http');
 var path = require('path');
+var session = require('express-session');
 
 // load customers route
 var customers = require('./routes/customers');
@@ -18,7 +19,6 @@ var mysql = require('mysql');
 app.set('port', 8080);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-// app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
@@ -26,15 +26,16 @@ app.use(express.methodOverride());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// development only
 if ('development' == app.get('env')) {
 	app.use(express.errorHandler());
 }
 
-/*------------------------------------------
- connection peer, register as middleware
- type koneksi : single,pool and request 
- -------------------------------------------*/
+app.use(session({
+	  resave: false, // don't save session if unmodified
+	  saveUninitialized: false, // don't create session until something stored
+	  secret: 'Ashish'
+	}));
+
 
 app.use(
 
@@ -43,10 +44,10 @@ connection(mysql, {
 	host : 'localhost',
 	user : 'root',
 	password : 'root',
-	port : 3306, // port mysql
+	port : 3306, 
 	database : 'nodejs'
 
-}, 'pool') // or single
+}, 'pool') 
 
 );
 app.get('/', routes.index);
@@ -57,6 +58,10 @@ app.post('/customers/add', customers.save);
 app.get('/customers/delete/:id', customers.delete_customer);
 app.get('/customers/edit/:id', customers.edit);
 app.post('/customers/edit/:id', customers.save_edit);
+app.get('/customers/editprofile', customers.editprofile);
+
+
+
 
 app.use(app.router);
 
