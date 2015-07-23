@@ -149,7 +149,6 @@ exports.login_customer = function(req, res) {
 					} else {
 						res.render('index', {
 							message : "Login failure, Please Try Again"
-
 						});
 
 					}

@@ -4,10 +4,7 @@
 
 exports.index = function(req, res) {
 	var userid = req.session.username;
-	console.log(userid);
-	
 	if (!userid) {
-		
 		res.render('index', {
 			title : 'Hello World',
 			message : '',
