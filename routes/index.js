@@ -7,7 +7,7 @@ exports.index = function(req, res) {
 	if (!userid) {
 		res.render('index', {
 			title : 'Hello World',
-			message : '',
+			message : 'Hello',
 			page_title : "Login Success",
 			title : "Success"
 		});

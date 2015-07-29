@@ -7,14 +7,15 @@ var routes = require('./routes');
 var http = require('http');
 var path = require('path');
 var session = require('express-session');
-
 // load customers route
 var customers = require('./routes/customers');
 var app = express();
 
 var connection = require('express-myconnection');
 var mysql = require('mysql');
+var mailsender=require('./routes/mailsender');
 
+var fs = require('fs');
 // all environments
 app.set('port', 8080);
 app.set('views', path.join(__dirname, 'views'));
@@ -31,11 +32,10 @@ if ('development' == app.get('env')) {
 }
 
 app.use(session({
-	  resave: false, // don't save session if unmodified
-	  saveUninitialized: false, // don't create session until something stored
-	  secret: 'Ashish'
-	}));
-
+	resave : false, // don't save session if unmodified
+	saveUninitialized : false, // don't create session until something stored
+	secret : 'Ashish'
+}));
 
 app.use(
 
@@ -44,10 +44,10 @@ connection(mysql, {
 	host : 'localhost',
 	user : 'root',
 	password : 'root',
-	port : 3306, 
+	port : 3306,
 	database : 'nodejs'
 
-}, 'pool') 
+}, 'pool')
 
 );
 app.get('/', routes.index);
@@ -59,10 +59,7 @@ app.get('/customers/delete/:id', customers.delete_customer);
 app.get('/customers/edit/:id', customers.edit);
 app.post('/customers/edit/:id', customers.save_edit);
 app.get('/customers/editprofile', customers.editprofile);
-
-
-
-
+app.get('/mailsender/sendmail/:mail', mailsender.sendmail);
 app.use(app.router);
 
 http.createServer(app).listen(app.get('port'), function() {

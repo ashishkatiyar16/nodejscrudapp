@@ -2,7 +2,6 @@ var customerservice = require("../services/customerservice");
 /*
  * GET users listing.
  */
-
 exports.list = function(req, res) {
 	req.getConnection(function(err, connection) {
 		var query = connection.query('SELECT * FROM customer', function(err,
@@ -12,17 +11,19 @@ exports.list = function(req, res) {
 			res.render('customers', {
 				page_title : "Customers List",
 				data : rows,
-				username:"Guest"
+				username : "Guest"
 			});
 		});
 	});
 };
 
-exports.add = function(req, res){
-	var username=req.session.username;
-	  res.render('add_customer',{ page_title: "Add Customers ", username:username});
-	};
-
+exports.add = function(req, res) {
+	var username = req.session.username;
+	res.render('add_customer', {
+		page_title : "Add Customers ",
+		username : username
+	});
+};
 
 exports.edit = function(req, res) {
 	var id = req.params.id;
@@ -38,7 +39,7 @@ exports.edit = function(req, res) {
 					res.render('edit_customer', {
 						page_title : "Edit Customers - ",
 						data : rows,
-						username:"Guest"
+						username : "Guest"
 					});
 
 				});
@@ -140,11 +141,11 @@ exports.login_customer = function(req, res) {
 					if (rows.length > 0) {
 						console.log("success");
 						req.session.userid = rows[0].id;
-						req.session.username=rows[0].name;
+						req.session.username = rows[0].name;
 						res.render('loginsuccess', {
 							page_title : "Customers - Login success",
 							data : rows,
-							username:"Guest"
+							username : "Guest"
 						});
 					} else {
 						res.render('index', {
@@ -154,14 +155,14 @@ exports.login_customer = function(req, res) {
 					}
 
 				});
-		 console.log(query.sql);
+		console.log(query.sql);
 	});
 
 };
 
 exports.editprofile = function(req, res) {
 	var userid = req.session.userid;
-	console.log("userid"+userid);
+	console.log("userid" + userid);
 	req.getConnection(function(err, connection) {
 
 		var query = connection.query('SELECT * FROM customer WHERE id = ?',
@@ -170,14 +171,15 @@ exports.editprofile = function(req, res) {
 					if (err) {
 						console.log("Error Selecting : %s ", err);
 						res.render('index', {
-							message : 'User does not exit into database',username:"Guest"
+							message : 'User does not exit into database',
+							username : "Guest"
 						});
 					}
 
 					res.render('edit_customer', {
 						page_title : "Edit Customers Profile",
 						data : rows,
-						username:"Guest"
+						username : "Guest"
 					});
 
 				});
@@ -185,3 +187,4 @@ exports.editprofile = function(req, res) {
 		// console.log(query.sql);
 	});
 };
+

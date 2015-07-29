@@ -11,6 +11,8 @@
     "express-myconnection": "1.0.4",
     "jade": "*",
     "mysql": "2.2.0",
-    "express-session":"*"
+    "express-session":"*",
+    "mailgun-js":"0.7.1",
+     "nodemailer": "0.3.29"
   }
 }
