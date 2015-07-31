@@ -9,7 +9,8 @@ exports.index = function(req, res) {
 			title : 'Hello World',
 			message : 'Hello',
 			page_title : "Login Success",
-			title : "Success"
+			title : "Success",
+			user: req.user 
 		});
 
 	} else {
