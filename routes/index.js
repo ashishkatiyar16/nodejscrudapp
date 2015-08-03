@@ -3,21 +3,22 @@
  */
 
 exports.index = function(req, res) {
-	var userid = req.session.username;
+	var userid = req.session.userid;
 	if (!userid) {
+		console.log(userid);
 		res.render('index', {
 			title : 'Hello World',
-			message : '',
-			page_title : "Login Success",
-			title : "Success"
+			message : 'Hello',
+			page_title : "Login",
+			title : "Success",
+			user : req.user
 		});
 
 	} else {
 		res.render('loginsuccess', {
-			message : '',
 			page_title : "Login Success",
-			title : "Success",
-			username : userid
+			title : "Customer Home",
+			username : req.session.username,
 		});
 	}
 

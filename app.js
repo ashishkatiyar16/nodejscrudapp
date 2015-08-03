@@ -1,20 +1,13 @@
-/**
- * Module dependencies.
- */
-
-var express = require('express');
-var routes = require('./routes');
-var http = require('http');
-var path = require('path');
-var session = require('express-session');
-
+var express = require('express'), cookieParser = require('cookie-parser'), bodyParser = require('body-parser');
+var routes = require('./routes'), http = require('http'), path = require('path'), session = require('express-session');
 // load customers route
 var customers = require('./routes/customers');
 var app = express();
+var mailsender = require('./routes/mailsender'), connection = require('express-myconnection');
+var mysql = require('mysql'), config = require('./configuration/config');
+var passport = require('passport');
 
-var connection = require('express-myconnection');
-var mysql = require('mysql');
-
+var fs = require('fs');
 // all environments
 app.set('port', 8080);
 app.set('views', path.join(__dirname, 'views'));
@@ -25,44 +18,55 @@ app.use(express.urlencoded());
 app.use(express.methodOverride());
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({
+	extended : false
+}));
+app.use(session({
+	secret : 'keyboard cat',
+	key : 'sid'
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 if ('development' == app.get('env')) {
 	app.use(express.errorHandler());
 }
 
 app.use(session({
-	  resave: false, // don't save session if unmodified
-	  saveUninitialized: false, // don't create session until something stored
-	  secret: 'Ashish'
-	}));
+	resave : false, // don't save session if unmodified
+	saveUninitialized : false, // don't create session until something stored
+	secret : 'Ashish'
+}));
+app.use(connection(mysql, config.dbconfig, 'pool'));
 
+function requireLogin(req, res, next) {
+	if (req.session.loggedIn) {
+		console.log("user is not logged in");
+		next(); // allow the next route to run
+	} else {
+		console.log("else part ");
+		// require the user to log in
+		res.render('index', {
+			page_title : "Login failure",
+			title : "Failed",
+			username : '',
+			message : 'Please Login First'
+		});
 
-app.use(
-
-connection(mysql, {
-
-	host : 'localhost',
-	user : 'root',
-	password : 'root',
-	port : 3306, 
-	database : 'nodejs'
-
-}, 'pool') 
-
-);
+		// or render a form, etc.
+	}
+}
 app.get('/', routes.index);
 app.post('/customers/login', customers.login_customer);
-app.get('/customers', customers.list);
-app.get('/customers/add', customers.add);
-app.post('/customers/add', customers.save);
-app.get('/customers/delete/:id', customers.delete_customer);
-app.get('/customers/edit/:id', customers.edit);
-app.post('/customers/edit/:id', customers.save_edit);
-app.get('/customers/editprofile', customers.editprofile);
-
-
-
-
+app.get('/customers/logout', customers.logout_customer);
+app.get('/customers', requireLogin, customers.list);
+app.get('/customers/add', requireLogin, customers.add);
+app.post('/customers/add', requireLogin, customers.save);
+app.get('/customers/delete/:id', requireLogin, customers.delete_customer);
+app.get('/customers/edit/:id', requireLogin, customers.edit);
+app.post('/customers/edit/:id', requireLogin, customers.save_edit);
+app.get('/mailsender/sendmail/:mail', requireLogin, mailsender.sendmail);
 app.use(app.router);
 
 http.createServer(app).listen(app.get('port'), function() {
