@@ -17,6 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({
@@ -53,8 +54,6 @@ function requireLogin(req, res, next) {
 			username : '',
 			message : 'Please Login First'
 		});
-
-		// or render a form, etc.
 	}
 }
 app.get('/', routes.index);
@@ -67,6 +66,7 @@ app.get('/customers/delete/:id', requireLogin, customers.delete_customer);
 app.get('/customers/edit/:id', requireLogin, customers.edit);
 app.post('/customers/edit/:id', requireLogin, customers.save_edit);
 app.get('/mailsender/sendmail/:mail', requireLogin, mailsender.sendmail);
+app.get('/api', customers.apirequest);
 app.use(app.router);
 
 http.createServer(app).listen(app.get('port'), function() {

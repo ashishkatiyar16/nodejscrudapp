@@ -1,4 +1,5 @@
 var customerservice = require("../services/customerservice");
+var request = require("request");
 /*
  * GET users listing.
  */
@@ -110,4 +111,21 @@ exports.logout_customer = function(req, res) {
 		message : "Login failure, Please Try Again"
 	});
 
+};
+
+exports.apirequest = function(req, res) {
+	// var data =
+	// "token='thisistoken'&agentId='100'&account='8586818344'&amount='10'&opcode='vd'&clientTransId='121212121212'";
+
+	request(
+			{
+				uri : "http://www.cybertelindia.com/api/recharge?token='thisistoken'&agentId='100'&account='8586818344'&amount=10&opcode=vd&clientTransId=54121212121212%27&originator=cybertel",
+				method : "GET",
+				timeout : 10000,
+				followRedirect : true,
+				maxRedirects : 10
+			}, function(error, response, body) {
+				console.log(response);
+				res.write(body);
+			});
 };

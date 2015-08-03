@@ -65,3 +65,4 @@ exports.logincustomer = function(req, res) {
 		res(err, rows);
 	});
 };
+
